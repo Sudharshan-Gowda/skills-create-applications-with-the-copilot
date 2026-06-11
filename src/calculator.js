@@ -68,25 +68,26 @@ if (nums.some(Number.isNaN)) {
   exitWithError('All operands must be valid numbers.');
 }
 
+// Delegate to core functions to make logic testable
+const { add, subtract, multiply, divide } = require('./lib/calculator-core');
+
 let result;
 switch (operation) {
   case 'add':
-    result = nums.reduce((a, b) => a + b, 0);
+    result = add(nums);
     break;
   case 'subtract':
-    result = nums.slice(1).reduce((a, b) => a - b, nums[0]);
+    result = subtract(nums);
     break;
   case 'multiply':
-    result = nums.reduce((a, b) => a * b, 1);
+    result = multiply(nums);
     break;
   case 'divide':
-    // handle division by zero gracefully
-    for (let i = 1; i < nums.length; i++) {
-      if (nums[i] === 0) {
-        exitWithError('Error: Division by zero detected. Aborting.', 2);
-      }
+    try {
+      result = divide(nums);
+    } catch (err) {
+      exitWithError(`Error: ${err.message}`, 2);
     }
-    result = nums.slice(1).reduce((a, b) => a / b, nums[0]);
     break;
   default:
     exitWithError('Unsupported operation.');
